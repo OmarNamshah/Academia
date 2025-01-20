@@ -82,7 +82,7 @@ frappe.ui.form.on("Request Action", {
 				},
 				callback: function (response) {
 					const employee = response.message;
-					if (employee) {
+					if (employee && frm.doc.docstatus == 0 && !frm.doc.action_maker) {
 						frm.set_value("action_maker", employee.name);
 					}
 				},
@@ -176,6 +176,10 @@ frappe.ui.form.on("Request Action", {
 		frm.clear_table("recipients");
 		frm.refresh_field("recipients");
 	},
+	
+	after_save: function(frm) {
+        location.reload()
+    },
 
 	onload: function (frm) {
 		document.addEventListener("keydown", function (event) {

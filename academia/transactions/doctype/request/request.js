@@ -208,6 +208,18 @@ frappe.ui.form.on("Request", {
 			add_reject_action(frm);
 			add_redirect_action(frm);
 		}
+		// Hide 'add row' button
+		frm.get_field("recipients").grid.cannot_add_rows = true;
+		// Stop 'add below' & 'add above' options
+		frm.get_field("recipients").grid.only_sortable();
+		frm.refresh_fields("recipients");
+
+		if (frm.doc.docstatus != 0) {
+			frm.fields_dict.get_recipients.$wrapper.hide();
+			frm.fields_dict.get_recipients.input.disabled = true;
+			frm.fields_dict.clear_recipients.$wrapper.hide();
+			frm.fields_dict.clear_recipients.input.disabled = true;
+		}
 	},
 
 	onload: function (frm) {
@@ -246,25 +258,18 @@ frappe.ui.form.on("Request", {
 		}
 	},
 
+	start_from: function(frm){
+		update_must_include(frm);
+	},
+
 	get_recipients: function (frm) {
+		update_must_include(frm);
 		let setters = {
 			employee_name: null,
 			department: null,
 			designation: null,
 		};
-		if (frm.doc.type == "External") {
-			setters.company = null;
-			frappe.call({
-				method: "academia.transactions.doctype.request.request.get_all_employees_except_start_with_company",
-				args: {
-					start_with_company: frm.doc.start_with_company,
-				},
-				callback: function (response) {
-					mustInclude = response.message;
-				},
-			});
-		} else if (frm.doc.type == "Internal") {
-		}
+		
 		new frappe.ui.form.MultiSelectDialog({
 			doctype: "Employee",
 			target: frm,
@@ -275,10 +280,9 @@ frappe.ui.form.on("Request", {
 			get_query() {
 				let filters = {
 					docstatus: ["!=", 2],
+					user_id: ["in", mustInclude],
+					company: frm.doc.start_from_company,
 				};
-				if (frm.doc.type == "External") {
-					filters.company = this.setters.company || "";
-				}
 				return {
 					filters: filters,
 				};
