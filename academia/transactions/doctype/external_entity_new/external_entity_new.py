@@ -12,11 +12,8 @@ class ExternalEntityNew(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from academia.transactions.doctype.external_entity_designation_new.external_entity_designation_new import ExternalEntityDesignationNew
 		from frappe.types import DF
-
-		from academia.transactions.doctype.external_entity_designation_new.external_entity_designation_new import (
-			ExternalEntityDesignationNew,
-		)
 
 		designations: DF.Table[ExternalEntityDesignationNew]
 		external_entity: DF.Data | None
