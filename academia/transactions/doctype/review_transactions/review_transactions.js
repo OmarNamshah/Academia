@@ -1,32 +1,29 @@
 // Copyright (c) 2025, SanU and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("Review Transactions", {
-// 	refresh(frm) {
-
-// 	},
-// });
-frappe.ui.form.on("Transactions For Review", {
-    form_render: function (frm, cdt, cdn) {
-        let child = locals[cdt][cdn];
-        let document_type = child.document_type;
-        
-        // Dynamically set the query for the document_name field
-        frm.fields_dict['document_name'].grid.get_field("document_name").get_query = function() {
+frappe.ui.form.on("Review Transactions", {
+    refresh: function (frm) {
+        // Set get_query for the child table field
+        frm.fields_dict["transactions_for_review"].grid.get_field("document_name").get_query = function () {
+            console.log("Applying filter: docstatus = 1");
             return {
-                query: "academia.transactions.doctype.review_transactions.review_transactions.get_documents",
                 filters: {
-                    docstatus: 1,  // Only include submitted documents
-                    document_type: document_type,  // Use the document_type from the child row
-                    company: frm.doc.company  // Pass company from the parent form
+                    docstatus: 1, // Show only submitted documents
+                    transaction_reference: frm.doc.transaction_reference // Match parent's transaction_reference
                 }
             };
         };
+    }
+});
 
-        // If needed, trigger any additional logic here for the row
-        // For example, refreshing the field or showing messages
-        frm.refresh_field("document_name");
-    },
+frappe.ui.form.on("Transactions For Review", {
+
+    document_type: function (frm, cdt, cdn) {
+		let child = locals[cdt][cdn];
+		frappe.model.set_value(cdt, cdn, "document_name", "");
+		frappe.model.set_value(cdt, cdn, "document_title", "");
+		frappe.model.set_value(cdt, cdn, "notes", "");
+	},
     
     document_name: function (frm, cdt, cdn) {
         console.log("Triggered document_name");
