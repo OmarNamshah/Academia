@@ -55,18 +55,19 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nCompleted\nCanceled\nClosed\nRejected"
+   "options": "Pending\nCompleted\nCanceled\nClosed\nRejected",
+   "read_only": 1
   },
   {
    "fieldname": "transaction_reference",
    "fieldtype": "Link",
    "label": "Transaction Reference",
    "options": "Transaction New",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -88,6 +89,7 @@
   {
    "fieldname": "from_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "From"
   },
   {
@@ -96,7 +98,6 @@
    "in_list_view": 1,
    "label": "Start From",
    "options": "Employee",
-   "read_only": 1,
    "reqd": 1,
    "set_only_once": 1
   },
@@ -153,7 +154,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-21 13:28:02.161135",
+ "modified": "2025-01-21 16:01:54.639987",
  "modified_by": "Administrator",
  "module": "Transactions",
  "name": "Review Transactions",
@@ -176,6 +177,27 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": [],
+ "states": [
+  {
+   "color": "Blue",
+   "title": "Pending"
+  },
+  {
+   "color": "Green",
+   "title": "Completed"
+  },
+  {
+   "color": "Red",
+   "title": "Canceled"
+  },
+  {
+   "color": "Orange",
+   "title": "Closed"
+  },
+  {
+   "color": "Purple",
+   "title": "Rejected"
+  }
+ ],
  "track_seen": 1
 }

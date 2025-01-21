@@ -58,3 +58,9 @@ def get_documents(filters):
             "docstatus": 1,  # Only submitted documents
         }
     )
+
+@frappe.whitelist()
+def get_shared_reviews(user):
+    shared_reviews = frappe.get_all('DocShare', filters={'user': user, 'share_doctype': 'Review Transactions'}, fields=['share_name'])
+    reviews_names = [review['share_name'] for review in shared_reviews]
+    return reviews_names
