@@ -17,7 +17,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Document Type",
-   "options": "Outbox Memo\nInbox Memo\nRequest\nSpecific Transaction Document",
+   "options": "Outbox Memo\nInbox Memo\nRequest\nSpecific Transaction Document\nReview Transactions",
    "read_only": 1
   },
   {
@@ -46,7 +46,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-29 20:46:25.580921",
+ "modified": "2025-01-21 15:49:07.937680",
  "modified_by": "Administrator",
  "module": "Transactions",
  "name": "Transaction Related Documents",

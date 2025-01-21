@@ -238,6 +238,58 @@ frappe.ui.form.on("Transaction New", {
 				},
 				__("Add Document")
 			);
+			frm.add_custom_button(
+				__("Review Transactions"),
+				function () {
+					if (frm.doc.related_documents.length > 0) {
+						frappe.call({
+							method: "frappe.client.get_value",
+							args: {
+								doctype:
+									frm.doc.related_documents[frm.doc.related_documents.length - 1]
+										.document_type,
+								fieldname: "status",
+								filters: {
+									name: frm.doc.related_documents[
+										frm.doc.related_documents.length - 1
+									].document_name,
+								},
+							},
+							callback: function (response) {
+								if (response.message) {
+									if (response.message.status == "Pending") {
+										frappe.throw(
+											__("You can't create a new document while another document is still pending.")
+										);
+									} else {
+										const url = frappe.urllib.get_full_url(
+											"/app/review-transactions/new?transaction_reference=" +
+												frm.doc.name
+										);
+
+										window.location.href = url;
+									}
+								} else {
+									const url = frappe.urllib.get_full_url(
+										"/app/review-transactions/new?transaction_reference=" +
+											frm.doc.name
+									);
+
+									window.location.href = url;
+								}
+							},
+						});
+					} else {
+						const url = frappe.urllib.get_full_url(
+							"/app/review-transactions/new?transaction_reference=" +
+								frm.doc.name
+						);
+
+						window.location.href = url;
+					}
+				},
+				__("Add Document")
+			);
 		}
 	},
 });

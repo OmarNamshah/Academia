@@ -2,6 +2,57 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Review Transactions", {
+    on_submit: function (frm){
+        frappe.call({
+			method: "frappe.client.get",
+			args: {
+				doctype: "Transaction New",
+				filters: {
+					name: frm.doc.transaction_reference,
+				},
+			},
+			callback: function (response) {
+				if (response.message) {
+					let transaction_new_doc = response.message;
+					transaction_new_doc.related_documents.push({
+						document_name: frm.doc.name,
+						document_type: frm.doc.doctype,
+						document_title: frm.doc.title,
+						document_status: frm.doc.status,
+					});
+					frappe.call({
+						method: "frappe.client.save",
+						args: {
+							doc: transaction_new_doc,
+						},
+						callback: function (save_response) {
+							if (save_response.message) {
+								frappe.set_route(
+									"Form",
+									"Transaction New",
+									frm.doc.transaction_reference
+								);
+							}
+						},
+					});
+				}
+			},
+		});
+    },
+    onload: function(frm) {
+        if (!frm.doc.start_from) {
+            // Fetch the Employee record where user_id matches the logged-in user
+            frappe.db.get_value('Employee', { 'user_id': frappe.session.user }, 'name', function(result) {
+                if (result && result.name) {
+                    frm.set_value('start_from', result.name);  // Set the employee field to the Employee name
+                }
+            });
+        }
+        // Set the current_action_maker field to the session user
+        if (!frm.doc.current_action_maker) {
+            frm.set_value('current_action_maker', frappe.session.user);  // Set current_action_maker to session user
+        }
+    },
     refresh: function (frm) {
         // Set get_query for the child table field
         frm.fields_dict["transactions_for_review"].grid.get_field("document_name").get_query = function () {

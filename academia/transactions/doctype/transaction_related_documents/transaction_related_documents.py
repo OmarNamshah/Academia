@@ -16,7 +16,7 @@ class TransactionRelatedDocuments(Document):
 
 		document_name: DF.DynamicLink | None
 		document_title: DF.Data | None
-		document_type: DF.Literal["Outbox Memo", "Inbox Memo", "Request", "Specific Transaction Document"]
+		document_type: DF.Literal["Outbox Memo", "Inbox Memo", "Request", "Specific Transaction Document", "Review Transactions"]
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
