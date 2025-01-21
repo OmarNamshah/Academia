@@ -30,8 +30,11 @@ class OutboxMemo(Document):
 		end_employee_department: DF.Link | None
 		end_employee_designation: DF.Link | None
 		end_employee_name: DF.Data | None
+		external_entity_designation: DF.Data | None
+		external_entity_employee: DF.Data | None
 		full_electronic: DF.Check
 		is_received: DF.Check
+		main_external_entity: DF.Link | None
 		naming_series: DF.Literal["OUTBOX-.YY.-.MM.-"]
 		recipients: DF.Table[TransactionRecipientsNew]
 		signatures: DF.Table[Signatures]
@@ -41,9 +44,10 @@ class OutboxMemo(Document):
 		start_from_designation: DF.Link | None
 		start_from_employee: DF.Data
 		status: DF.Literal["Pending", "Completed", "Canceled", "Closed", "Rejected"]
+		sub_external_entity: DF.Link | None
 		title: DF.Data
 		transaction_reference: DF.Link
-		type: DF.Literal["Internal", "External"]
+		type: DF.Literal["Internal", "External", "To External Entity"]
 	# end: auto-generated types
 	def before_submit(self):
 		if self.direction == "Upward" or self.type == "External":
@@ -119,7 +123,7 @@ class OutboxMemo(Document):
 			employee = frappe.get_doc("Employee", self.start_from, fields=["reports_to", "user_id"])
 			share_permission_through_route(self, employee)
 
-		elif self.start_from and self.direction == "Downward":
+		elif self.start_from and self.direction == "Downward" and self.type == "Internal":
 			frappe.share.add(
 				doctype="Outbox Memo",
 				name=self.name,
@@ -318,7 +322,7 @@ def create_new_outbox_memo_action(user_id, outbox_memo, type, details):
 			and outbox_memo_doc.direction != "Downward"
 		)
 	) or (
-		outbox_memo_doc.type == "External"
+		outbox_memo_doc.type != "Internal"
 		and (action_maker.user_id != end_employee_email and type == "Approved")
 	):  # Access the recipients attribute on the document
 		reports_to = action_maker.reports_to
@@ -363,8 +367,8 @@ def create_new_outbox_memo_action(user_id, outbox_memo, type, details):
 		update_share_permissions(outbox_memo, user_id, permissions_str)
 
 	else:
-		if (action_maker.user_id == outbox_memo_doc.recipients[0].recipient_email and type == "Approved") or (
-			outbox_memo_doc.type == "External"
+		if (outbox_memo_doc.type == "Internal" and action_maker.user_id == outbox_memo_doc.recipients[0].recipient_email and type == "Approved") or (
+			outbox_memo_doc.type != "Internal"
 			and action_maker.user_id == end_employee_email
 			and type == "Approved"
 		):
@@ -451,7 +455,7 @@ def update_share_permissions(docname, user, permissions):
 
 def share_permission_through_route(document, current_employee):
 	reports_to = current_employee.reports_to
-	if current_employee.user_id != document.recipients[0].recipient_email:
+	if (document.type == "Internal" and current_employee.user_id != document.recipients[0].recipient_email) or (document.type != "Internal" and current_employee.name != document.end_employee):
 		reports_to_emp = frappe.get_doc("Employee", reports_to)
 		# if reports_to_emp != document.recipients[0].recipient_email:
 		frappe.share.add(

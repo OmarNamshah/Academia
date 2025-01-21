@@ -46,7 +46,7 @@ frappe.ui.form.on("Outbox Memo", {
 	before_submit: function (frm) {
 		if (
 			(frm.doc.type === "Internal" && frm.doc.direction != "Downward") ||
-			frm.doc.type == "External"
+			frm.doc.type != "Internal"
 		) {
 			frappe.call({
 				method: "frappe.client.get_value",

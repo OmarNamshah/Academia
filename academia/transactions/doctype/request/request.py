@@ -35,7 +35,27 @@ class Request(Document):
 		title: DF.Data
 		transaction_reference: DF.Link | None
 	# end: auto-generated types
-	pass
+	
+	def on_submit(self):
+		employee = frappe.get_doc("Employee", self.start_from)
+		frappe.share.add(
+			doctype="Request",
+			name=self.name,
+			user=employee.user_id,
+			read=1,
+			write=0,
+			share=0,
+		)
+
+		frappe.share.add(
+				doctype="Request",
+				name=self.name,
+				user=self.recipients[0].recipient_email,
+				read=1,
+				write=1,
+				share=1,
+				submit=1,
+			)
 
 
 @frappe.whitelist()
@@ -134,7 +154,7 @@ def get_request_actions_html(request_name):
 	actions = frappe.get_all(
 		"Request Action",
 		filters={"request": request_name, "docstatus": 1},
-		fields=["name", "type", "action_date", "action_maker", "details"],
+		fields=["name", "type", "action_date", "created_by", "details"],
 		order_by="creation asc",
 	)
 
@@ -165,15 +185,13 @@ def get_request_actions_html(request_name):
 	}
 
 	for action in actions:
-		type_color = type_colors.get(action["type"], "black")
-		action_maker = action["action_maker"] if action["action_maker"] else "None"
 
 		table_html += f"""
         <tr>
             <td><a href="/app/request-action/{action['name']}" target="_blank">{action['name']}</a></td>
-            <td style="color: white; background-color: {type_color}; padding: 5px; border-radius: 10px; text-align: center; width: 100%;">{action['type']}</td>
+            <td>{action['type']}</td>
             <td>{action['action_date']}</td>
-            <td>{action['action_maker']}</td>
+            <td>{action['created_by']}</td>
             <td>{action['details'] or ''}</td>
         </tr>
         """
