@@ -13,6 +13,13 @@ frappe.ui.form.on("Review Transactions", {
                 }
             };
         };
+        if (
+			frm.doc.docstatus == 1 &&
+			frm.doc.status == "Pending"
+		) {
+			add_approve_action(frm);
+			add_reject_action(frm);
+		}
     }
 });
 
@@ -51,3 +58,29 @@ frappe.ui.form.on("Transactions For Review", {
         }
     },
 });
+
+function add_approve_action(frm){
+    cur_frm.page.add_action_item(__("Approve"), function () {
+    frappe.db.set_value(
+        "Review Transactions",
+		frm.docname,
+        "status",
+        "Completed"
+    )
+    .then(() => {
+        location.reload();
+    });
+})}
+
+function add_reject_action(frm){
+    cur_frm.page.add_action_item(__("Reject"), function () {
+    frappe.db.set_value(
+        "Review Transactions",
+		frm.docname,
+        "status",
+        "Rejected"
+    )
+    .then(() => {
+        location.reload();
+    });
+})}
