@@ -17,12 +17,9 @@ class TemplatePath(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		recipient: DF.Link
 		recipient_company: DF.Link
-		recipient_department: DF.Link | None
-		recipient_designation: DF.Link | None
-		recipient_email: DF.Link | None
-		recipient_name: DF.ReadOnly | None
+		recipient_department: DF.Link
+		recipient_designation: DF.Link
 		step: DF.Int
 	# end: auto-generated types
 	pass

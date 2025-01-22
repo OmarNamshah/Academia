@@ -223,12 +223,9 @@ def copy_template_paths(template_docname):
         recipients_paths.append({
             'doctype': 'Recipients Path',
 			'step': path.step,
-            'recipient': path.recipient,
-			'recipient_name': path.recipient_name,
 			'recipient_company': path.recipient_company,
 			'recipient_department': path.recipient_department,
 			'recipient_designation': path.recipient_designation,
-			'recipient_email': path.recipient_email,
         })
 
     return recipients_paths

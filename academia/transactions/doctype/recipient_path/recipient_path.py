@@ -21,7 +21,7 @@ class RecipientPath(Document):
 		recipient_company: DF.Link
 		recipient_department: DF.Link | None
 		recipient_designation: DF.Link | None
-		recipient_email: DF.Link | None
+		recipient_email: DF.Link
 		recipient_name: DF.ReadOnly | None
 		step: DF.Int
 	# end: auto-generated types
