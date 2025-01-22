@@ -1,11 +1,11 @@
 {
-"actions": [],
-"allow_rename": 1,
-"autoname": "naming_series:",
-"creation": "2024-12-22 19:48:14.182885",
-"doctype": "DocType",
-"engine": "InnoDB",
-"field_order": [
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2024-12-22 19:48:14.182885",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
   "section_break_g9lf",
   "amended_from",
   "current_action_maker",
@@ -13,6 +13,7 @@
   "title",
   "status",
   "inbox_from",
+  "using_path_template",
   "full_electronic",
   "transaction_reference",
   "naming_series",
@@ -35,6 +36,10 @@
   "recipients",
   "get_recipients",
   "clear_recipients",
+  "section_break_wdkm",
+  "template_name",
+  "template_is_active",
+  "recipients_path",
   "attachments_tab",
   "attachments",
   "related_actions_tab",
@@ -186,6 +191,7 @@
    "label": "Full Electronic"
   },
   {
+   "depends_on": "eval:doc.using_path_template == 0",
    "fieldname": "to_section",
    "fieldtype": "Section Break",
    "label": "To"
@@ -194,7 +200,7 @@
    "fieldname": "recipients",
    "fieldtype": "Table",
    "label": "Recipients",
-   "mandatory_depends_on": "eval: doc.inbox_from",
+   "mandatory_depends_on": "eval:doc.using_path_template == 0",
    "options": "Transaction Recipients New"
   },
   {
@@ -240,27 +246,63 @@
    "fieldtype": "HTML",
    "label": "Related Actions",
    "read_only": 1
-},
-{
- "allow_on_submit": 1,
- "default": "1",
- "fieldname": "is_received",
- "fieldtype": "Check",
- "label": "Is Received",
- "read_only": 1
-},
-{
- "fieldname": "naming_series",
- "fieldtype": "Select",
- "hidden": 1,
- "label": "Naming Series",
- "options": "INBOX-.YY.-.MM.-"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "1",
+   "fieldname": "is_received",
+   "fieldtype": "Check",
+   "label": "Is Received",
+   "read_only": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "INBOX-.YY.-.MM.-"
+  },
+  {
+   "depends_on": "using_path_template",
+   "fieldname": "section_break_wdkm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "using_path_template",
+   "fieldname": "recipients_path",
+   "fieldtype": "Table",
+   "label": "Recipients Path",
+   "mandatory_depends_on": "using_path_template",
+   "options": "Recipient Path"
+  },
+  {
+   "default": "0",
+   "fieldname": "using_path_template",
+   "fieldtype": "Check",
+   "label": "Using Path Template"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "template_name",
+   "fieldtype": "Link",
+   "label": "Template Name",
+   "mandatory_depends_on": "using_path_template",
+   "options": "Transaction Path Template",
+   "read_only_depends_on": "template_is_active"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "template_is_active",
+   "fieldtype": "Check",
+   "label": "Template Is Active"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-18 14:04:51.951537",
+ "modified": "2025-01-21 18:45:54.672342",
  "modified_by": "Administrator",
  "module": "Transactions",
  "name": "Inbox Memo",
@@ -281,37 +323,23 @@
    "write": 1
   },
   {
-    "email": 1,
-    "export": 1,
-    "print": 1,
-    "read": 1,
-    "report": 1,
-    "role": "Transactions User",
-    "share": 1,
-    "write": 1
-   },
-   {
-    "create": 1,
-    "email": 1,
-    "export": 1,
-    "print": 1,
-    "read": 1,
-    "report": 1,
-    "role": "Faculty Dean",
-    "share": 1,
-    "submit": 1,
-    "write": 1
-   },
-  {
-   "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "transactions user",
-   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Faculty Dean",
    "share": 1,
    "submit": 1,
    "write": 1

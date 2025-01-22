@@ -133,7 +133,8 @@ function add_redirect_action(frm) {
 
 frappe.ui.form.on("Inbox Memo", {
 	before_submit: function (frm) {
-		frm.set_value("current_action_maker", frm.doc.recipients[0].recipient_email);
+		current_action_maker = frm.doc.using_path_template ?frm.doc.recipients_path[0].recipient_email : frm.doc.recipients[0].recipient_email;
+		frm.set_value("current_action_maker", current_action_maker);
 		frappe.call({
 			method: "academia.transactions.doctype.inbox_memo.inbox_memo.update_share_permissions",
 			args: {
@@ -149,14 +150,7 @@ frappe.ui.form.on("Inbox Memo", {
 			callback: function (response) {
 				if (response.message) {
 					// frappe.db.set_value(inbox_memo , 'current_action_maker')
-					frappe.db.set_value(
-						"Inbox Memo",
-						frm.doc.name,
-						"current_action_maker",
-						inbox_memo_action_doc.recipients[0].recipient_email
-					);
-					// back to Transaction after save the transaction action
-					location.reload();
+					console.log(response.message);
 				}
 			},
 		});
@@ -233,6 +227,7 @@ frappe.ui.form.on("Inbox Memo", {
 
 		// Hide 'add row' button
 		frm.get_field("recipients").grid.cannot_add_rows = true;
+		frm.get_field("recipients_path").grid.cannot_add_rows = true;
 		// Stop 'add below' & 'add above' options
 		frm.get_field("recipients").grid.only_sortable();
 		frm.refresh_field("recipients");
@@ -392,6 +387,34 @@ frappe.ui.form.on("Inbox Memo", {
 		frm.clear_table("recipients");
 		frm.refresh_field("recipients");
 	},
+
+	template_name: function(frm) {
+        if (frm.doc.template_name) {
+            frappe.call({
+                method: 'academia.transactions.doctype.inbox_memo.inbox_memo.copy_template_paths',
+                args: {
+                    template_docname: frm.doc.template_name
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        // Clear existing entries in the recipients_path child table
+                        frm.doc.recipients_path = []; // Clear existing entries
+                        frm.refresh_field('recipients_path'); // Refresh the field
+
+                        r.message.forEach(function(item) {
+                            frm.add_child('recipients_path', item);
+                        });
+                        frm.refresh_field('recipients_path'); // Refresh the field again to show new entries
+                    }
+                }
+            });
+        } else {
+            // Clear if template_name is empty
+            frm.doc.recipients_path = []; // Clear existing entries
+            frm.refresh_field('recipients_path'); // Refresh the field
+        }
+    },
+	
 });
 
 frappe.ui.form.on("Inbox Memo", {
