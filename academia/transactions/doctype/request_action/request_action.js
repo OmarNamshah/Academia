@@ -28,10 +28,36 @@ frappe.ui.form.on("Request Action", {
 						frm.doc.request,
 						"current_action_maker",
 						request_action_doc.recipients[0].recipient_email
-					);
+					)
+					.then(() => {
+						frappe.call({
+							method: "frappe.client.get_value",
+							args: {
+								doctype: "Request",
+								fieldname: "transaction_reference",
+								filters: { name: frm.doc.request },
+							},
+							callback: function (response) {
+								if (response.message) {
+									const transaction_reference = response.message.transaction_reference;
+									frappe.db
+										.set_value(
+											"Transaction New",
+											transaction_reference,
+											"transaction_holder",
+											request_action_doc.recipients[0].recipient_email
+										)
+										.then(() => {
+											frappe.set_route("Form", "Request", frm.doc.request);
+											location.reload();
+										});
+								} else {
+									frappe.msgprint("Transaction reference not found.");
+								}
+							},
+						});
+					})
 					// back to Transaction after save the transaction action
-					frappe.set_route("Form", "Request", frm.doc.request);
-					location.reload();
 				}
 			},
 		});

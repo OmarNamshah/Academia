@@ -21,6 +21,7 @@ class TransactionNew(Document):
 		start_date: DF.Date | None
 		status: DF.Literal["Pending", "Completed", "Canceled", "Closed", "Rejected"]
 		title: DF.Data
+		transaction_holder: DF.Link | None
 	# end: auto-generated types
 	def before_submit(self):
 		self.start_date = frappe.utils.today()

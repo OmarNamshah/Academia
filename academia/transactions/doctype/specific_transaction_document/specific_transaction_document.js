@@ -87,6 +87,13 @@ frappe.ui.form.on("Specific Transaction Document", {
 							if (response.message) {
 								user_id = response.message.user_id;
 								frm.set_value("current_action_maker", user_id);
+								frappe.db
+									.set_value(
+										"Transaction New",
+										frm.doc.transaction_reference,
+										"transaction_holder",
+										user_id
+									)
 							}
 						},
 					});
@@ -269,7 +276,16 @@ function add_approve_action(frm) {
 											r.message.action_maker
 										)
 										.then(() => {
-											location.reload();
+											frappe.db
+												.set_value(
+													"Transaction New",
+													frm.doc.transaction_reference,
+													"transaction_holder",
+													r.message.action_maker
+												)
+												.then(() => {
+													location.reload();
+												})
 										});
 								}
 								// frappe.db.set_value('Transaction', frm.docname, 'status', 'Approved');
@@ -382,76 +398,86 @@ function add_approve_action(frm) {
 											r.message.action_maker
 										)
 										.then(() => {
-											console.log(r.message);
-											global_action_name = r.message.action_name;
-											console.log(global_action_name);
+											frappe.db
+												.set_value(
+													"Transaction New",
+													frm.doc.transaction_reference,
+													"transaction_holder",
+													r.message.action_maker
+												)
+												.then(() => {
+													console.log(r.message);
+													global_action_name = r.message.action_name;
+													console.log(global_action_name);
 
-											frappe.call({
-												method: "academia.transactions.doctype.outbox_memo.outbox_memo.create_transaction_document_log",
-												args: {
-													start_employee: values.start_employee,
-													end_employee: global_next_recipient,
-													document_type: "Specific Transaction Document",
-													document_name: values.document_name,
-													document_action_type:
-														"Specific Transaction Document Action",
-													document_action_name: global_action_name,
-													middle_man: values.middle_man,
-													through_middle_man: values.through_middle_man
-														? "True"
-														: "False",
-													proof: values.proof,
-													with_proof: values.with_proof
-														? "True"
-														: "False",
-												},
-												callback: function (r) {
-													if (r.message) {
-														console.log(
-															"Transaction Document Log created:",
-															r.message
-														);
-														if (r.message) {
-															if (
-																values.with_proof &&
-																!values.through_middle_man
-															) {
-																frappe.db
-																	.set_value(
-																		"Specific Transaction Document",
-																		frm.docname,
-																		"is_received",
-																		1
-																	)
-																	.then(() => {
-																		location.reload();
-																	});
-															} else {
-																frappe.db
-																	.set_value(
-																		"Specific Transaction Document",
-																		frm.docname,
-																		"is_received",
-																		0
-																	)
-																	.then(() => {
-																		location.reload();
-																	});
+													frappe.call({
+														method: "academia.transactions.doctype.outbox_memo.outbox_memo.create_transaction_document_log",
+														args: {
+															start_employee: values.start_employee,
+															end_employee: global_next_recipient,
+															document_type: "Specific Transaction Document",
+															document_name: values.document_name,
+															document_action_type:
+																"Specific Transaction Document Action",
+															document_action_name: global_action_name,
+															middle_man: values.middle_man,
+															through_middle_man: values.through_middle_man
+																? "True"
+																: "False",
+															proof: values.proof,
+															with_proof: values.with_proof
+																? "True"
+																: "False",
+														},
+														callback: function (r) {
+															if (r.message) {
+																console.log(
+																	"Transaction Document Log created:",
+																	r.message
+																);
+																if (r.message) {
+																	if (
+																		values.with_proof &&
+																		!values.through_middle_man
+																	) {
+																		frappe.db
+																			.set_value(
+																				"Specific Transaction Document",
+																				frm.docname,
+																				"is_received",
+																				1
+																			)
+																			.then(() => {
+																				location.reload();
+																			});
+																	} else {
+																		frappe.db
+																			.set_value(
+																				"Specific Transaction Document",
+																				frm.docname,
+																				"is_received",
+																				0
+																			)
+																			.then(() => {
+																				location.reload();
+																			});
+																	}
+																	// location.reload();
+																}
 															}
-															// location.reload();
-														}
-													}
-												},
-												error: function (r) {
-													frappe.msgprint("You are in the error");
-													console.error(r);
-													frappe.msgprint({
-														title: __("Error"),
-														indicator: "red",
-														message: r.message,
+														},
+														error: function (r) {
+															frappe.msgprint("You are in the error");
+															console.error(r);
+															frappe.msgprint({
+																title: __("Error"),
+																indicator: "red",
+																message: r.message,
+															});
+														},
 													});
-												},
-											});
+												})
+											
 										});
 								}
 

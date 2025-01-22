@@ -2,6 +2,9 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Transaction New", {
+	before_submit: function (frm) {
+		frm.set_value("transaction_holder", frappe.session.user);
+	},
 	refresh(frm) {
 		localStorage.setItem("transaction_reference", frm.doc.name);
 
