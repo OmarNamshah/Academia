@@ -227,7 +227,7 @@ frappe.ui.form.on("Inbox Memo", {
 
 		// Hide 'add row' button
 		frm.get_field("recipients").grid.cannot_add_rows = true;
-		frm.get_field("recipients_path").grid.cannot_add_rows = true;
+		// frm.get_field("recipients_path").grid.cannot_add_rows = true;
 		// Stop 'add below' & 'add above' options
 		frm.get_field("recipients").grid.only_sortable();
 		frm.refresh_field("recipients");
@@ -387,32 +387,40 @@ frappe.ui.form.on("Inbox Memo", {
 		frm.clear_table("recipients");
 		frm.refresh_field("recipients");
 	},
-
+	
 	template_name: function(frm) {
-        if (frm.doc.template_name) {
-            frappe.call({
-                method: 'academia.transactions.doctype.inbox_memo.inbox_memo.copy_template_paths',
-                args: {
-                    template_docname: frm.doc.template_name
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        // Clear existing entries in the recipients_path child table
-                        frm.doc.recipients_path = []; // Clear existing entries
-                        frm.refresh_field('recipients_path'); // Refresh the field
-
-                        r.message.forEach(function(item) {
-                            frm.add_child('recipients_path', item);
-                        });
-                        frm.refresh_field('recipients_path'); // Refresh the field again to show new entries
-                    }
-                }
-            });
-        } else {
-            // Clear if template_name is empty
-            frm.doc.recipients_path = []; // Clear existing entries
-            frm.refresh_field('recipients_path'); // Refresh the field
-        }
+		if(!frm.doc.template_name)
+		{
+			// Clear if template_name is empty
+            frm.doc.recipients_path = [];
+            frm.refresh_field('recipients_path'); 
+		}
+		else
+		{
+			frappe.call({
+				method: 'academia.transactions.doctype.inbox_memo.inbox_memo.copy_template_paths',
+				args: {
+					template_docname: frm.doc.template_name
+				},
+				callback: function(r) {
+					if (r.message) {
+						// Clear existing entries in the recipients_path child table
+						frm.clear_table('recipients_path');
+		
+						// Add new entries
+						r.message.forEach(function(item) {
+							let child = frm.add_child('recipients_path');
+							frappe.model.set_value(child.doctype, child.name, 'step', item.step);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_company', item.recipient_company);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_department', item.recipient_department);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_designation', item.recipient_designation);
+						});
+		
+						frm.refresh_field('recipients_path');
+					}
+				}
+			});
+		}
     },
 	
 });
