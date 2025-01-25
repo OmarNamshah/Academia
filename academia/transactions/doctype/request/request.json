@@ -12,6 +12,7 @@
   "is_received",
   "title",
   "status",
+  "using_path_template",
   "full_electronic",
   "transaction_reference",
   "naming_series",
@@ -28,6 +29,10 @@
   "recipients",
   "get_recipients",
   "clear_recipients",
+  "section_break_otmi",
+  "template_name",
+  "template_is_active",
+  "recipients_path",
   "attachments_tab",
   "attachments",
   "related_actions_tab",
@@ -111,6 +116,7 @@
    "options": "Designation"
   },
   {
+   "depends_on": "eval:doc.using_path_template == 0",
    "fieldname": "to_section",
    "fieldtype": "Section Break",
    "label": "To"
@@ -197,12 +203,43 @@
    "hidden": 1,
    "label": "Naming Series",
    "options": "REQ-.YY.-.MM.-"
+  },
+  {
+   "default": "0",
+   "fieldname": "using_path_template",
+   "fieldtype": "Check",
+   "label": "Using Path Template"
+  },
+  {
+   "depends_on": "using_path_template",
+   "fieldname": "section_break_otmi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Link",
+   "label": "Template Name",
+   "options": "Transaction Path Template",
+   "read_only_depends_on": "template_is_active"
+  },
+  {
+   "default": "0",
+   "fieldname": "template_is_active",
+   "fieldtype": "Check",
+   "label": "Template Is Active"
+  },
+  {
+   "depends_on": "using_path_template",
+   "fieldname": "recipients_path",
+   "fieldtype": "Table",
+   "label": "Recipients Path",
+   "options": "Recipient Path"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-20 14:26:25.478692",
+ "modified": "2025-01-25 19:18:30.650529",
  "modified_by": "Administrator",
  "module": "Transactions",
  "name": "Request",

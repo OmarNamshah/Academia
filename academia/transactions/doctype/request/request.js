@@ -366,6 +366,42 @@ frappe.ui.form.on("Request", {
 		frm.clear_table("recipients");
 		frm.refresh_field("recipients");
 	},
+
+	template_name: function(frm) {
+		if(!frm.doc.template_name)
+		{
+			// Clear if template_name is empty
+            frm.doc.recipients_path = [];
+            frm.refresh_field('recipients_path'); 
+		}
+		else
+		{
+			frappe.call({
+				method: 'academia.transactions.doctype.request.request.copy_template_paths',
+				args: {
+					template_docname: frm.doc.template_name
+				},
+				callback: function(r) {
+					if (r.message) {
+						// Clear existing entries in the recipients_path child table
+						frm.clear_table('recipients_path');
+		
+						// Add new entries
+						r.message.forEach(function(item) {
+							let child = frm.add_child('recipients_path');
+							frappe.model.set_value(child.doctype, child.name, 'step', item.step);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_company', item.recipient_company);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_department', item.recipient_department);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_designation', item.recipient_designation);
+						});
+		
+						frm.refresh_field('recipients_path');
+					}
+				}
+			});
+		}
+    },
+
 });
 
 function update_must_include(frm) {

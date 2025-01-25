@@ -90,44 +90,7 @@ function add_redirect_action(frm) {
 
 		// فتح الرابط في نافذة جديدة
 		window.location.href = url;
-		// frappe.new_doc("Inbox Memo Action", {
-		// 	inbox_memo: frm.doc.name,
-		// 	type: "Redirected",
-		// 	from_company: frm.doc.start_from_company,
-		// 	from_department: frm.doc.start_from_department,
-		// 	from_designation: frm.doc.start_from_designation,
-		// 	// received: is_received,
-		// });
-		// // back to Transaction after save the transaction action
-		// frappe.ui.form.on("Inbox Memo Action", {
-		// 	on_submit: function () {
-		// 		if (frm.doc.inbox_memo) { frappe.msgprint(frm.doc.inbox_memo) }
-		// 		else { frappe.msgprint("")}
-		// 		frappe.call({
-		// 			method: "academia.transactions.doctype.inbox_memo.inbox_memo.update_share_permissions",
-		// 			args: {
-		// 				docname: frm.doc.name,
-		// 				user: frappe.session.user,
-		// 				permissions: {
-		// 					read: 1,
-		// 					write: 0,
-		// 					share: 0,
-		// 					submit: 0,
-		// 				},
-		// 			},
-		// 			callback: function (response) {
-		// 				if (response.message) {
-		// 					inbox_memo_action_doc = frappe.get_doc("Inbox Memo Action", frm.doc)
-		// 					// frappe.db.set_value(inbox_memo , 'current_action_maker')
-		// 					frappe.db.set_value("Inbox Memo", frm.doc.inbox_memo, "current_action_maker", inbox_memo_action_doc.recipients[0].recipient_email);
-		// 					// back to Transaction after save the transaction action
-		// 					frappe.set_route("Form", "Inbox Memo", frm.doc.name);
-		// 					location.reload();
-		// 				}
-		// 			},
-		// 		});
-		// 	},
-		// });
+	
 	});
 }
 

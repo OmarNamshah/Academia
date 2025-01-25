@@ -116,12 +116,27 @@ def create_new_inbox_memo_action(user_id, inbox_memo, type, details):
 		action_name = new_doc.name
 
 		if type == "Approved":
-			inbox_memo_doc.status = "Completed"
+			if inbox_memo_doc.using_path_template:
+				if action_maker.user_id == inbox_memo_doc.recipients_path[-1].recipient_email:
+					inbox_memo_doc.status = "Completed"
+					inbox_memo_doc.complete_time = frappe.utils.now()
+					inbox_memo_doc.current_action_maker = ""
+				else:
+					for i, recipient in enumerate(inbox_memo_doc.recipients_path):
+						if recipient.recipient_email == action_maker.user_id:
+							next_recipient_email = inbox_memo_doc.recipients_path[i + 1].recipient_email if i < len(inbox_memo_doc.recipients_path) else None
+							inbox_memo_doc.current_action_maker = next_recipient_email
+							permissions = {"read": 1, "write": 1, "share": 1, "submit": 1}
+							permissions_str = json.dumps(permissions)
+							update_share_permissions(inbox_memo, next_recipient_email, permissions_str)
+							break
+
+			# inbox_memo_doc.status = "Completed"
+
 		elif type == "Rejected":
 			inbox_memo_doc.status = "Rejected"
-
-		inbox_memo_doc.complete_time = frappe.utils.now()
-		inbox_memo_doc.current_action_maker = ""
+			inbox_memo_doc.complete_time = frappe.utils.now()
+			inbox_memo_doc.current_action_maker = ""
 
 		inbox_memo_doc.save(ignore_permissions=True)
 
