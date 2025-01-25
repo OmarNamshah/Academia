@@ -9,11 +9,17 @@
   "title",
   "status",
   "amended_from",
-  "start_date",
   "naming_series",
   "transaction_holder",
+  "column_break_mdzu",
+  "company",
+  "start_date",
+  "is_sub_transaction",
+  "parent_transaction",
   "related_documents_section",
   "related_documents",
+  "sub_transactions_section",
+  "sub_transactions",
   "actions_tab"
  ],
  "fields": [
@@ -83,13 +89,52 @@
    "label": "Transaction Holder",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mdzu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sub_transactions_section",
+   "fieldtype": "Section Break",
+   "label": "Sub Transactions"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sub_transactions",
+   "fieldtype": "Table",
+   "label": "Sub Transactions",
+   "options": "Sub Transactions",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sub_transaction",
+   "fieldtype": "Check",
+   "label": "Is Sub Transaction"
+  },
+  {
+   "depends_on": "is_sub_transaction",
+   "fieldname": "parent_transaction",
+   "fieldtype": "Link",
+   "label": "Parent Transaction",
+   "mandatory_depends_on": "is_sub_transaction",
+   "options": "Transaction New",
+   "read_only_depends_on": "eval:doc.docstatus == 1"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-22 18:03:29.589941",
+ "modified": "2025-01-25 19:31:44.533711",
  "modified_by": "Administrator",
  "module": "Transactions",
  "name": "Transaction New",
