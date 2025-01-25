@@ -14,6 +14,7 @@ class InboxMemo(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from academia.transactions.doctype.recipient_path.recipient_path import RecipientPath
 		from academia.transactions.doctype.transaction_attachments_new.transaction_attachments_new import TransactionAttachmentsNew
 		from academia.transactions.doctype.transaction_recipients_new.transaction_recipients_new import TransactionRecipientsNew
 		from frappe.types import DF
@@ -28,7 +29,9 @@ class InboxMemo(Document):
 		inbox_from: DF.Literal["Company within the system", "Company outside the system"]
 		is_received: DF.Check
 		main_external_entity: DF.Link | None
+		naming_series: DF.Literal["INBOX-.YY.-.MM.-"]
 		recipients: DF.Table[TransactionRecipientsNew]
+		recipients_path: DF.Table[RecipientPath]
 		start_from: DF.Link | None
 		start_from_company: DF.Link | None
 		start_from_department: DF.Link | None
@@ -36,8 +39,11 @@ class InboxMemo(Document):
 		start_from_employee: DF.Data | None
 		status: DF.Literal["Pending", "Completed", "Canceled", "Closed", "Rejected"]
 		sub_external_entity: DF.Link | None
+		template_is_active: DF.Check
+		template_name: DF.Link | None
 		title: DF.Data
 		transaction_reference: DF.Link | None
+		using_path_template: DF.Check
 	# end: auto-generated types
 	def on_submit(self):
 		if self.inbox_from == "Company within the system":
@@ -51,16 +57,28 @@ class InboxMemo(Document):
 				share=0,
 			)
 
-		employee = frappe.get_doc("Employee", self.recipients[0].recipient)
-		frappe.share.add(
-			doctype="inbox Memo",
-			name=self.name,
-			user=employee.user_id,
-			read=1,
-			write=1,
-			share=1,
-			submit=1,
-		)
+		if not self.using_path_template:
+			employee = frappe.get_doc("Employee", self.recipients[0].recipient)
+			frappe.share.add(
+				doctype="inbox Memo",
+				name=self.name,
+				user=employee.user_id,
+				read=1,
+				write=1,
+				share=1,
+				submit=1,
+			)
+		else:
+			employee = frappe.get_doc("Employee", self.recipients_path[0].recipient)
+			frappe.share.add(
+				doctype="inbox Memo",
+				name=self.name,
+				user=employee.user_id,
+                read=1,
+                write=1,
+                share=1,
+                submit=1,
+			)
 
 @frappe.whitelist()
 def get_shared_inbox_memos(user):
@@ -98,12 +116,27 @@ def create_new_inbox_memo_action(user_id, inbox_memo, type, details):
 		action_name = new_doc.name
 
 		if type == "Approved":
-			inbox_memo_doc.status = "Completed"
+			if inbox_memo_doc.using_path_template:
+				if action_maker.user_id == inbox_memo_doc.recipients_path[-1].recipient_email:
+					inbox_memo_doc.status = "Completed"
+					inbox_memo_doc.complete_time = frappe.utils.now()
+					inbox_memo_doc.current_action_maker = ""
+				else:
+					for i, recipient in enumerate(inbox_memo_doc.recipients_path):
+						if recipient.recipient_email == action_maker.user_id:
+							next_recipient_email = inbox_memo_doc.recipients_path[i + 1].recipient_email if i < len(inbox_memo_doc.recipients_path) else None
+							inbox_memo_doc.current_action_maker = next_recipient_email
+							permissions = {"read": 1, "write": 1, "share": 1, "submit": 1}
+							permissions_str = json.dumps(permissions)
+							update_share_permissions(inbox_memo, next_recipient_email, permissions_str)
+							break
+
+			# inbox_memo_doc.status = "Completed"
+
 		elif type == "Rejected":
 			inbox_memo_doc.status = "Rejected"
-
-		inbox_memo_doc.complete_time = frappe.utils.now()
-		inbox_memo_doc.current_action_maker = ""
+			inbox_memo_doc.complete_time = frappe.utils.now()
+			inbox_memo_doc.current_action_maker = ""
 
 		inbox_memo_doc.save(ignore_permissions=True)
 
@@ -193,3 +226,21 @@ def get_request_actions_html(inbox_memo_name):
 	table_html += "</tbody></table>"
 
 	return table_html
+
+@frappe.whitelist()
+def copy_template_paths(template_docname):
+    # Fetch the template document
+    template_doc = frappe.get_doc("Transaction Path Template", template_docname)
+
+    # Prepare data for recipients_path
+    recipients_paths = []
+    for path in template_doc.template_path:
+        recipients_paths.append({
+            'doctype': 'Recipients Path',
+			'step': path.step,
+			'recipient_company': path.recipient_company,
+			'recipient_department': path.recipient_department,
+			'recipient_designation': path.recipient_designation,
+        })
+
+    return recipients_paths

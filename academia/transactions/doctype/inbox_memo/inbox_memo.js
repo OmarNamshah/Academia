@@ -90,50 +90,14 @@ function add_redirect_action(frm) {
 
 		// فتح الرابط في نافذة جديدة
 		window.location.href = url;
-		// frappe.new_doc("Inbox Memo Action", {
-		// 	inbox_memo: frm.doc.name,
-		// 	type: "Redirected",
-		// 	from_company: frm.doc.start_from_company,
-		// 	from_department: frm.doc.start_from_department,
-		// 	from_designation: frm.doc.start_from_designation,
-		// 	// received: is_received,
-		// });
-		// // back to Transaction after save the transaction action
-		// frappe.ui.form.on("Inbox Memo Action", {
-		// 	on_submit: function () {
-		// 		if (frm.doc.inbox_memo) { frappe.msgprint(frm.doc.inbox_memo) }
-		// 		else { frappe.msgprint("")}
-		// 		frappe.call({
-		// 			method: "academia.transactions.doctype.inbox_memo.inbox_memo.update_share_permissions",
-		// 			args: {
-		// 				docname: frm.doc.name,
-		// 				user: frappe.session.user,
-		// 				permissions: {
-		// 					read: 1,
-		// 					write: 0,
-		// 					share: 0,
-		// 					submit: 0,
-		// 				},
-		// 			},
-		// 			callback: function (response) {
-		// 				if (response.message) {
-		// 					inbox_memo_action_doc = frappe.get_doc("Inbox Memo Action", frm.doc)
-		// 					// frappe.db.set_value(inbox_memo , 'current_action_maker')
-		// 					frappe.db.set_value("Inbox Memo", frm.doc.inbox_memo, "current_action_maker", inbox_memo_action_doc.recipients[0].recipient_email);
-		// 					// back to Transaction after save the transaction action
-		// 					frappe.set_route("Form", "Inbox Memo", frm.doc.name);
-		// 					location.reload();
-		// 				}
-		// 			},
-		// 		});
-		// 	},
-		// });
+	
 	});
 }
 
 frappe.ui.form.on("Inbox Memo", {
 	before_submit: function (frm) {
-		frm.set_value("current_action_maker", frm.doc.recipients[0].recipient_email);
+		current_action_maker = frm.doc.using_path_template ?frm.doc.recipients_path[0].recipient_email : frm.doc.recipients[0].recipient_email;
+		frm.set_value("current_action_maker", current_action_maker);
 		frappe.call({
 			method: "academia.transactions.doctype.inbox_memo.inbox_memo.update_share_permissions",
 			args: {
@@ -149,14 +113,7 @@ frappe.ui.form.on("Inbox Memo", {
 			callback: function (response) {
 				if (response.message) {
 					// frappe.db.set_value(inbox_memo , 'current_action_maker')
-					frappe.db.set_value(
-						"Inbox Memo",
-						frm.doc.name,
-						"current_action_maker",
-						inbox_memo_action_doc.recipients[0].recipient_email
-					);
-					// back to Transaction after save the transaction action
-					location.reload();
+					console.log(response.message);
 				}
 			},
 		});
@@ -233,6 +190,7 @@ frappe.ui.form.on("Inbox Memo", {
 
 		// Hide 'add row' button
 		frm.get_field("recipients").grid.cannot_add_rows = true;
+		// frm.get_field("recipients_path").grid.cannot_add_rows = true;
 		// Stop 'add below' & 'add above' options
 		frm.get_field("recipients").grid.only_sortable();
 		frm.refresh_field("recipients");
@@ -392,6 +350,42 @@ frappe.ui.form.on("Inbox Memo", {
 		frm.clear_table("recipients");
 		frm.refresh_field("recipients");
 	},
+	
+	template_name: function(frm) {
+		if(!frm.doc.template_name)
+		{
+			// Clear if template_name is empty
+            frm.doc.recipients_path = [];
+            frm.refresh_field('recipients_path'); 
+		}
+		else
+		{
+			frappe.call({
+				method: 'academia.transactions.doctype.inbox_memo.inbox_memo.copy_template_paths',
+				args: {
+					template_docname: frm.doc.template_name
+				},
+				callback: function(r) {
+					if (r.message) {
+						// Clear existing entries in the recipients_path child table
+						frm.clear_table('recipients_path');
+		
+						// Add new entries
+						r.message.forEach(function(item) {
+							let child = frm.add_child('recipients_path');
+							frappe.model.set_value(child.doctype, child.name, 'step', item.step);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_company', item.recipient_company);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_department', item.recipient_department);
+							frappe.model.set_value(child.doctype, child.name, 'recipient_designation', item.recipient_designation);
+						});
+		
+						frm.refresh_field('recipients_path');
+					}
+				}
+			});
+		}
+    },
+	
 });
 
 frappe.ui.form.on("Inbox Memo", {

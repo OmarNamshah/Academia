@@ -1,9 +1,9 @@
 frappe.listview_settings['Inbox Memo'] = {
 
     onload: function(listview) {
-        $('.btn-primary').filter(function () {
-            return $(this).text().trim() === 'Add Inbox Memo';
-        }).hide();
+        // $('.btn-primary').filter(function () {
+        //     return $(this).text().trim() === 'Add Inbox Memo';
+        // }).hide();
 
         if(!frappe.user_roles.includes('Transactions Manager')) {
             frappe.call({
