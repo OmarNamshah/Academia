@@ -36,9 +36,32 @@ frappe.ui.form.on("Outbox Memo Action", {
 							},
 							callback: function (response) {
 								if (!response.exc) {
-									// frappe.set_route("Form", "Outbox Memo", frm.doc.outbox_memo)
-									frappe.set_route("Form", "Outbox Memo", frm.doc.outbox_memo);
-									location.reload();
+									frappe.call({
+										method: "frappe.client.get_value",
+										args: {
+											doctype: "Outbox Memo",
+											fieldname: "transaction_reference",
+											filters: { name: frm.doc.outbox_memo },
+										},
+										callback: function (response) {
+											if (response.message) {
+												const transaction_reference = response.message.transaction_reference;
+												frappe.db
+													.set_value(
+														"Transaction New",
+														transaction_reference,
+														"transaction_holder",
+														outbox_memo_action_doc.recipients[0].recipient_email
+													)
+													.then(() => {
+														frappe.set_route("Form", "Outbox Memo", frm.doc.outbox_memo);
+														location.reload();
+													});
+											} else {
+												frappe.msgprint("Transaction reference not found.");
+											}
+										},
+									});
 								} else {
 									frappe.msgprint("There was an error!");
 								}
@@ -55,8 +78,32 @@ frappe.ui.form.on("Outbox Memo Action", {
 							},
 							callback: function (response) {
 								if (!response.exc) {
-									frappe.set_route("Form", "Outbox Memo", frm.doc.outbox_memo);
-									location.reload();
+									frappe.call({
+										method: "frappe.client.get_value",
+										args: {
+											doctype: "Outbox Memo",
+											fieldname: "transaction_reference",
+											filters: { name: frm.doc.outbox_memo },
+										},
+										callback: function (response) {
+											if (response.message) {
+												const transaction_reference = response.message.transaction_reference;
+												frappe.db
+													.set_value(
+														"Transaction New",
+														transaction_reference,
+														"transaction_holder",
+														outbox_memo_action_doc.recipients[0].recipient_email
+													)
+													.then(() => {
+														frappe.set_route("Form", "Outbox Memo", frm.doc.outbox_memo);
+														location.reload();
+													});
+											} else {
+												frappe.msgprint("Transaction reference not found.");
+											}
+										},
+									});
 								} else {
 									frappe.msgprint("There was an error!");
 								}

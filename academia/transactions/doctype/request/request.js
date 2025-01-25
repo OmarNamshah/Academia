@@ -171,32 +171,54 @@ frappe.ui.form.on("Request", {
 	},
 	before_submit: function (frm) {
 		frm.set_value("current_action_maker", frm.doc.recipients[0].recipient_email);
-		frappe.call({
-			method: "academia.transactions.doctype.request.request.update_share_permissions",
-			args: {
-				docname: frm.doc.name,
-				user: frappe.session.user,
-				permissions: {
-					read: 1,
-					write: 1,
-					share: 1,
-					submit: 1,
-				},
-			},
-			callback: function (response) {
-				if (response.message) {
-					// frappe.db.set_value(inbox_memo , 'current_action_maker')
-					frappe.db.set_value(
-						"Request",
-						frm.doc.name,
-						"current_action_maker",
-						Request_action_doc.recipients[0].recipient_email
-					);
-					// back to Transaction after save the transaction action
-					location.reload();
-				}
-			},
-		});
+		frappe.db
+			.set_value(
+				"Transaction New",
+				frm.doc.transaction_reference,
+				"transaction_holder",
+				frm.doc.recipients[0].recipient_email
+			)
+			.then(() => {
+				frappe.call({
+					method: "academia.transactions.doctype.request.request.update_share_permissions",
+					args: {
+						docname: frm.doc.name,
+						user: frappe.session.user,
+						permissions: {
+							read: 1,
+							write: 1,
+							share: 1,
+							submit: 1,
+						},
+					},
+					callback: function (response) {
+						if (response.message) {
+							// frappe.db.set_value(inbox_memo , 'current_action_maker')
+							frappe.db.set_value(
+								"Request",
+								frm.doc.name,
+								"current_action_maker",
+								Request_action_doc.recipients[0].recipient_email
+							)
+							.then(() => {
+								frappe.db
+									.set_value(
+										"Transaction New",
+										frm.doc.transaction_reference,
+										"transaction_holder",
+										Request_action_doc.recipients[0].recipient_email
+									)
+									.then(() => {
+										location.reload();
+									});
+							});
+							// back to Transaction after save the transaction action
+							
+						}
+					},
+				});
+			});
+		
 	},
 
 	refresh(frm) {
