@@ -2,6 +2,24 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Transaction New", {
+	before_submit: function (frm) {
+		frm.set_value("transaction_holder", frappe.session.user);
+		frappe.call({
+            method: "frappe.client.get_value",
+            args: {
+                doctype: "Employee",
+                filters: { user_id: frappe.session.user },
+                fieldname: "company"
+            },
+            callback: function(response) {
+                if (response.message) {
+                    let company = response.message.company;
+                    // Set the company field with the fetched company
+                    frm.set_value("company", company);
+                }
+            }
+        });
+	},
 	refresh(frm) {
 		localStorage.setItem("transaction_reference", frm.doc.name);
 
@@ -32,7 +50,86 @@ frappe.ui.form.on("Transaction New", {
 				},
 			});
 		});
-		if (frm.doc.status === "Pending" && frm.doc.docstatus != 0) {
+
+		if (frm.doc.transaction_holder == frappe.session.user) {
+			if (frm.doc.related_documents.length > 0) {
+				frappe.call({
+					method: "frappe.client.get_value",
+					args: {
+						doctype:
+							frm.doc.related_documents[frm.doc.related_documents.length - 1]
+								.document_type,
+						fieldname: "status",
+						filters: {
+							name: frm.doc.related_documents[
+								frm.doc.related_documents.length - 1
+							].document_name,
+						},
+					},
+					callback: function (response) {
+						if (response.message) {
+							if (response.message.status != "Pending") {
+								add_transfer_transaction_button(frm);
+							}
+						} else {
+							add_transfer_transaction_button(frm);
+						}
+					},
+				});
+			} else {
+				add_transfer_transaction_button(frm);
+			}
+			frm.add_custom_button(__('Create Sub-Transaction'), function() {
+                frappe.prompt([
+                    {
+                        label: 'Title',
+                        fieldname: 'title',
+                        fieldtype: 'Data',
+                        reqd: 1
+                    },
+                ], function(values) {
+                    // Create a new sub-transaction document
+                    frappe.call({
+                        method: "frappe.client.insert",
+                        args: {
+                            doc: {
+                                doctype: "Transaction New",
+                                title: values.title,
+                                parent_transaction: frm.doc.name,
+                                is_sub_transaction: 1,
+								transaction_holder: frappe.session.user,
+                            }
+                        },
+                        callback: function(response) {
+                            if (response.message) {
+                                let new_sub_transaction = response.message;
+                                // Submit the new sub-transaction document
+                                frappe.call({
+                                    method: "frappe.client.submit",
+                                    args: {
+                                        doc: new_sub_transaction
+                                    },
+                                    callback: function(submit_response) {
+                                        if (submit_response.message) {
+                                            // Add the new sub-transaction to the sub_transactions child table
+                                            let new_row = frm.add_child('sub_transactions');
+                                            new_row.transaction = new_sub_transaction.name;
+                                            new_row.title = new_sub_transaction.title;
+                                            new_row.status = new_sub_transaction.status;
+                                            frm.refresh_field('sub_transactions');
+											frm.save_or_update();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }, __('Create Sub-Transaction'), __('Create'));
+            });
+		}
+		
+
+		if (frm.doc.status === "Pending" && frm.doc.docstatus != 0 && frm.doc.transaction_holder == frappe.session.user) {
 			frm.add_custom_button(
 				__("Request"),
 				function () {
@@ -293,3 +390,44 @@ frappe.ui.form.on("Transaction New", {
 		}
 	},
 });
+
+function add_transfer_transaction_button(frm){
+	frm.add_custom_button(__('Transfer Transaction'), function() {
+		frappe.prompt([
+			{
+				label: 'New Holder',
+				fieldname: 'new_holder',
+				fieldtype: 'Link',
+				options: 'Employee',
+				reqd: 1,
+				get_query: function() {
+					return {
+						filters: {
+							company: frm.doc.company,
+							user_id: ["!=", frappe.session.user]
+						}
+					};
+				}
+			}
+		], function(values) {
+			// Fetch the user_id of the selected employee
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Employee",
+					filters: { name: values.new_holder },
+					fieldname: "user_id"
+				},
+				callback: function(response) {
+					if (response.message) {
+						let user_id = response.message.user_id;
+						// Update the transaction_holder field with the user_id of the selected employee
+						frm.set_value('transaction_holder', user_id)
+						.then(() => {frm.save_or_update(); });
+						
+					}
+				}
+			});
+		}, __('Transfer Transaction'), __('Transfer'));
+	});
+}

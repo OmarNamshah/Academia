@@ -90,12 +90,32 @@ frappe.ui.form.on("Specific Transaction Document Action", {
 							},
 							callback: function (response) {
 								if (!response.exc) {
-									frappe.set_route(
-										"Form",
-										"Specific Transaction Document",
-										frm.doc.specific_transaction_document
-									);
-									location.reload();
+									frappe.call({
+										method: "frappe.client.get_value",
+										args: {
+											doctype: "Specific Transaction Document",
+											fieldname: "transaction_reference",
+											filters: { name: frm.doc.specific_transaction_document },
+										},
+										callback: function (response) {
+											if (response.message) {
+												const transaction_reference = response.message.transaction_reference;
+												frappe.db
+													.set_value(
+														"Transaction New",
+														transaction_reference,
+														"transaction_holder",
+														specific_transaction_document_action_doc.recipients[0].recipient_email
+													)
+													.then(() => {
+														frappe.set_route("Form", "Specific Transaction Document", frm.doc.specific_transaction_document);
+														location.reload();
+													});
+											} else {
+												frappe.msgprint("Transaction reference not found.");
+											}
+										},
+									});
 								} else {
 									frappe.msgprint("There was an error!");
 								}
