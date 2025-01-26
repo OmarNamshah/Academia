@@ -81,7 +81,6 @@
    "in_list_view": 1,
    "label": "Start From",
    "options": "Employee",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -208,7 +207,8 @@
    "default": "0",
    "fieldname": "using_path_template",
    "fieldtype": "Check",
-   "label": "Using Path Template"
+   "label": "Using Path Template",
+   "set_only_once": 1
   },
   {
    "depends_on": "using_path_template",
@@ -239,7 +239,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-25 19:18:30.650529",
+ "modified": "2025-01-26 20:31:14.316059",
  "modified_by": "Administrator",
  "module": "Transactions",
  "name": "Request",
