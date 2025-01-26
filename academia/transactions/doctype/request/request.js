@@ -170,13 +170,14 @@ frappe.ui.form.on("Request", {
 		});
 	},
 	before_submit: function (frm) {
-		frm.set_value("current_action_maker", frm.doc.recipients[0].recipient_email);
+		current_action_maker = frm.doc.using_path_template ?frm.doc.recipients_path[0].recipient_email : frm.doc.recipients[0].recipient_email;
+		frm.set_value("current_action_maker", current_action_maker);
 		frappe.db
 			.set_value(
 				"Transaction New",
 				frm.doc.transaction_reference,
 				"transaction_holder",
-				frm.doc.recipients[0].recipient_email
+				current_action_maker
 			)
 			.then(() => {
 				frappe.call({
@@ -198,7 +199,7 @@ frappe.ui.form.on("Request", {
 								"Request",
 								frm.doc.name,
 								"current_action_maker",
-								Request_action_doc.recipients[0].recipient_email
+								current_action_maker
 							)
 							.then(() => {
 								frappe.db
@@ -206,7 +207,7 @@ frappe.ui.form.on("Request", {
 										"Transaction New",
 										frm.doc.transaction_reference,
 										"transaction_holder",
-										Request_action_doc.recipients[0].recipient_email
+										current_action_maker
 									)
 									.then(() => {
 										location.reload();
