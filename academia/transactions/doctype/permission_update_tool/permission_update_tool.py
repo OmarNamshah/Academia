@@ -18,16 +18,26 @@ class PermissionUpdateTool(Document):
         amended_from: DF.Link | None
         details: DF.Text | None
         new_employee: DF.Link
+        new_employee_name: DF.Data | None
         old_employee: DF.Link
+        old_employee_name: DF.Data | None
     # end: auto-generated types
 
     def on_submit(self):
+        # Fetch the complete record for old_employee
+        old_employee_record = frappe.get_doc("Employee", self.old_employee)
+        old_employee_user_id = old_employee_record.user_id  # Access the user_id field
+        # frappe.msgprint(f"Old Employee User ID: {old_employee_user_id}")
+        # Fetch the complete record for new_employee
+        new_employee_record = frappe.get_doc("Employee", self.new_employee)
+        new_employee_user_id = new_employee_record.user_id  # Access the user_id field
+        # frappe.msgprint(f"New Employee User ID: {new_employee_user_id}")
         # frappe.msgprint("on_submit triggered!")
         update_user_values(
             doctype_name="DocShare",
             field_a="user",
-            condition_a_value=self.old_employee,
-            new_value_for_field_a=self.new_employee,
+            condition_a_value=old_employee_user_id,
+            new_value_for_field_a=new_employee_user_id,
             field_b="share_doctype",
             condition_b_values=[
                 "Transaction",
@@ -41,38 +51,38 @@ class PermissionUpdateTool(Document):
         # update_user_values(
         #     doctype_name="Transaction New",
         #     field_a="current_action_maker",
-        #     condition_a_value=self.old_employee,
-        #     new_value_for_field_a=self.new_employee
+        #     condition_a_value=old_employee_user_id,
+        #     new_value_for_field_a=new_employee_user_id
         # )
         # update_user_values(
         #     doctype_name="Transaction",
         #     field_a="current_action_maker",
-        #     condition_a_value=self.old_employee,
-        #     new_value_for_field_a=self.new_employee
+        #     condition_a_value=old_employee_user_id,
+        #     new_value_for_field_a=new_employee_user_id
         # )
         update_user_values(
             doctype_name="Inbox Memo",
             field_a="current_action_maker",
-            condition_a_value=self.old_employee,
-            new_value_for_field_a=self.new_employee
+            condition_a_value=old_employee_user_id,
+            new_value_for_field_a=new_employee_user_id
         )
         update_user_values(
             doctype_name="Outbox Memo",
             field_a="current_action_maker",
-            condition_a_value=self.old_employee,
-            new_value_for_field_a=self.new_employee
+            condition_a_value=old_employee_user_id,
+            new_value_for_field_a=new_employee_user_id
         )
         update_user_values(
             doctype_name="Specific Transaction Document",
             field_a="current_action_maker",
-            condition_a_value=self.old_employee,
-            new_value_for_field_a=self.new_employee
+            condition_a_value=old_employee_user_id,
+            new_value_for_field_a=new_employee_user_id
         )
         update_user_values(
             doctype_name="Request",
             field_a="current_action_maker",
-            condition_a_value=self.old_employee,
-            new_value_for_field_a=self.new_employee
+            condition_a_value=old_employee_user_id,
+            new_value_for_field_a=new_employee_user_id
         )
 
 	

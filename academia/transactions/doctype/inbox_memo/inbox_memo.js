@@ -98,6 +98,13 @@ frappe.ui.form.on("Inbox Memo", {
 	before_submit: function (frm) {
 		current_action_maker = frm.doc.using_path_template ?frm.doc.recipients_path[0].recipient_email : frm.doc.recipients[0].recipient_email;
 		frm.set_value("current_action_maker", current_action_maker);
+		frappe.db
+			.set_value(
+				"Transaction New",
+				frm.doc.transaction_reference,
+				"transaction_holder",
+				current_action_maker
+			)
 		frappe.call({
 			method: "academia.transactions.doctype.inbox_memo.inbox_memo.update_share_permissions",
 			args: {

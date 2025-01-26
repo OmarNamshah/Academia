@@ -5,6 +5,9 @@ let mustInclude = [];
 frappe.ui.form.on("Inbox Memo Action", {
 	before_save: function (frm) {
 		frm.set_value("naming_series", frm.doc.inbox_memo + "-ACT-");
+		if (frappe.session.user !== "Administrator") {
+			frm.set_value("created_by", frappe.session.user);
+		}
 	},
 	on_submit: function (frm) {
 		frappe.call({
@@ -28,7 +31,35 @@ frappe.ui.form.on("Inbox Memo Action", {
 						frm.doc.inbox_memo,
 						"current_action_maker",
 						inbox_memo_action_doc.recipients[0].recipient_email
-					);
+					)
+					.then(() => {
+						frappe.call({
+							method: "frappe.client.get_value",
+							args: {
+								doctype: "Inbox Memo",
+								fieldname: "transaction_reference",
+								filters: { name: frm.doc.inbox_memo },
+							},
+							callback: function (response) {
+								if (response.message) {
+									const transaction_reference = response.message.transaction_reference;
+									frappe.db
+										.set_value(
+											"Transaction New",
+											transaction_reference,
+											"transaction_holder",
+											inbox_memo_action_doc.recipients[0].recipient_email
+										)
+										.then(() => {
+											frappe.set_route("Form", "Inbox Memo", frm.doc.inbox_memo);
+											location.reload();
+										});
+								} else {
+									frappe.msgprint("Transaction reference not found.");
+								}
+							},
+						});
+					})
 					// back to Transaction after save the transaction action
 					frappe.set_route("Form", "Inbox Memo", frm.doc.inbox_memo);
 					location.reload();
@@ -36,6 +67,9 @@ frappe.ui.form.on("Inbox Memo Action", {
 			},
 		});
 	},
+	after_save: function(frm) {
+        location.reload()
+    },
 	refresh(frm) {
 		frappe.call({
 			method: "frappe.client.get",
@@ -70,7 +104,7 @@ frappe.ui.form.on("Inbox Memo Action", {
 		frm.get_field("recipients").grid.only_sortable();
 		frm.refresh_field("recipients");
 
-		if (frappe.session.user !== "Administrator" && frm.doc.docstatus == 0) {
+		if (frappe.session.user !== "Administrator" && frm.doc.docstatus == 0 && !frm.doc.action_maker) {
 			frappe.call({
 				method: "frappe.client.get",
 				args: {
@@ -81,7 +115,7 @@ frappe.ui.form.on("Inbox Memo Action", {
 				},
 				callback: function (response) {
 					const employee = response.message;
-					if (employee) {
+					if (employee && frm.doc.docstatus == 0) {
 						frm.set_value("action_maker", employee.name);
 					}
 				},
@@ -193,7 +227,7 @@ frappe.ui.form.on("Inbox Memo Action", {
 		}
 		if (frm.doc.docstatus == 0) {
 			frm.set_value("action_date", frappe.datetime.get_today());
-			frm.set_value("created_by", frappe.session.user);
+			// frm.set_value("created_by", frappe.session.user);
 		}
 	},
 });
@@ -211,7 +245,7 @@ function update_must_include(frm) {
 				mustInclude = []
 				if (response.message && response.message.length > 0) {
 					// Filter out null values and employees without users
-					mustInclude = response.message.filter(emp => emp !== null && emp.user_id && emp.user_id.trim() !== "");
+					mustInclude = response.message.filter(emp => emp !== null);
 				}
 
 				// If mustInclude is empty, add a placeholder value
