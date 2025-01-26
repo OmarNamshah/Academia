@@ -21,7 +21,8 @@ class Course(Document):
 		course_type: DF.Literal["", "University Requirement", "Faculty Requirement", "Program Requirement"]
 		description: DF.TextEditor | None
 		elective_template: DF.Check
-		faculty: DF.Link
+		faculty: DF.Link | None
 		program: DF.Link | None
+		reference_department: DF.Link | None
 	# end: auto-generated types
 	pass
