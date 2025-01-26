@@ -25,7 +25,7 @@ class UniversityRequirement(Document):
 		]
 		active: DF.Check
 		approval_date: DF.Date | None
-		date_of_development: DF.Date | None
+		date_of_development: DF.Date
 		implementation_start_academic_year: DF.Link | None
 		table_rzel: DF.Table[StudyPlanCourse]
 		title: DF.Data

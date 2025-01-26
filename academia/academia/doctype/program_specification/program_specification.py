@@ -34,6 +34,7 @@ class ProgramSpecification(Document):
 		delivery_mode: DF.Literal["", "On Campus", "Online"]
 		department: DF.ReadOnly
 		faculty: DF.ReadOnly
+		faculty_requirements: DF.Link
 		file: DF.Attach | None
 		implementation_start_academic_year: DF.Link | None
 		maximum_research_period: DF.Int
@@ -44,6 +45,8 @@ class ProgramSpecification(Document):
 		research_or_thesis: DF.Check
 		table_omcu: DF.Table[CreditHoursCourse]
 		table_ytno: DF.Table[StudyPlanCourse]
+		total_elective_hours: DF.Int
 		total_hours_required_to_award_degree: DF.Int
+		university_requirements: DF.Link
 	# end: auto-generated types
 	pass

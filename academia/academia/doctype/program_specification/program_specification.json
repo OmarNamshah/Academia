@@ -15,24 +15,27 @@
   "abbr",
   "academic_degree",
   "date_of_starting_the_program",
-  "section_break_soto",
-  "courses",
-  "column_break_uxus",
-  "research_or_thesis",
+  "course_required_section",
+  "university_requirements",
+  "column_break_sjay",
+  "faculty_requirements",
   "section_break_koic",
   "total_hours_required_to_award_degree",
+  "total_elective_hours",
   "course_language",
+  "implementation_start_academic_year",
   "column_break_zw7h",
   "delivery_mode",
   "academic_system",
-  "section_break_46rv",
-  "implementation_start_academic_year",
-  "column_break_sksq",
   "date_of_programe_development",
   "section_break_mzlt",
   "approval_date",
   "column_break_kpxz",
   "file",
+  "section_break_soto",
+  "courses",
+  "column_break_uxus",
+  "research_or_thesis",
   "study_plan_details_tab",
   "semester_system_section",
   "table_ytno",
@@ -46,7 +49,8 @@
  "fields": [
   {
    "fieldname": "section_break_8b0b",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Academic Program"
   },
   {
    "fieldname": "program_name",
@@ -78,14 +82,6 @@
    "fieldtype": "Select",
    "label": "Delivery Mode",
    "options": "\nOn Campus\nOnline"
-  },
-  {
-   "fieldname": "section_break_46rv",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_sksq",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "date_of_programe_development",
@@ -272,11 +268,39 @@
    "label": "Faculty Department",
    "read_only": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "university_requirements",
+   "fieldtype": "Link",
+   "label": "University Requirements",
+   "options": "University Requirement",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_sjay",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "faculty_requirements",
+   "fieldtype": "Link",
+   "label": "Faculty Requirements ",
+   "options": "University Requirement",
+   "reqd": 1
+  },
+  {
+   "fieldname": "course_required_section",
+   "fieldtype": "Section Break",
+   "label": "Course Required"
+  },
+  {
+   "fieldname": "total_elective_hours",
+   "fieldtype": "Int",
+   "label": "Total Elective Hours"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-14 17:41:30.382609",
+ "modified": "2025-01-27 01:15:26.685253",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Program Specification",

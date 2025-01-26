@@ -38,6 +38,7 @@
   {
    "fieldname": "academic_degree",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Academic Degree",
    "options": "\nPost-Secondary Diploma\nBachelor's Degree\nPostgraduate Diploma\nMaster Degree\nPHD Degree"
   },
@@ -76,6 +77,7 @@
   {
    "fieldname": "faculty",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Faculty",
    "options": "Faculty",
    "reqd": 1
@@ -83,7 +85,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-27 01:05:42.420494",
+ "modified": "2025-01-27 01:08:11.487908",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Faculty Requirement",

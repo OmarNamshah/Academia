@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{title}-{date_of_development}",
+ "autoname": "format:{title} -{date_of_development}",
  "creation": "2025-01-27 00:47:18.276234",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -40,7 +40,8 @@
   {
    "fieldname": "date_of_development",
    "fieldtype": "Date",
-   "label": "Date of Development"
+   "label": "Date of Development",
+   "reqd": 1
   },
   {
    "fieldname": "academic_degree",
@@ -76,7 +77,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-27 00:56:23.162104",
+ "modified": "2025-01-27 01:08:21.233598",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "University Requirement",
