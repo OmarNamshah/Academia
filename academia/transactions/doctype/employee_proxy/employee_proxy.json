@@ -7,11 +7,11 @@
  "field_order": [
   "employee",
   "employee_name",
-  "employee_company",
+  "employee_email",
   "column_break_betn",
+  "employee_company",
   "employee_department",
   "employee_designation",
-  "employee_email",
   "section_break_hyrq",
   "delegated_employees"
  ],
@@ -22,53 +22,47 @@
    "in_list_view": 1,
    "label": "Employee",
    "options": "Employee",
-   "reqd": 1,
    "unique": 1
   },
   {
    "fetch_from": "employee.employee_name",
+   "fetch_if_empty": 1,
    "fieldname": "employee_name",
    "fieldtype": "Data",
    "label": "Employee Name",
    "read_only": 1
   },
   {
-   "fetch_from": "employee.company",
    "fieldname": "employee_company",
    "fieldtype": "Link",
    "label": "Employee Company",
    "options": "Company",
-   "read_only": 1
+   "reqd": 1
   },
   {
    "fieldname": "column_break_betn",
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "employee.department",
    "fieldname": "employee_department",
    "fieldtype": "Link",
    "label": "Employee Department",
    "options": "Department",
-   "read_only": 1
+   "reqd": 1
   },
   {
-   "fetch_from": "employee.designation",
    "fieldname": "employee_designation",
    "fieldtype": "Link",
    "label": "Employee Designation",
    "options": "Designation",
-   "read_only": 1
+   "reqd": 1
   },
   {
    "fetch_from": "employee.user_id",
    "fieldname": "employee_email",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Employee Email",
-   "options": "User",
-   "read_only": 1,
-   "reqd": 1
+   "options": "User"
   },
   {
    "fieldname": "section_break_hyrq",
@@ -84,10 +78,10 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-26 16:55:18.476450",
+ "modified": "2025-01-27 17:24:59.309072",
  "modified_by": "Administrator",
  "module": "Transactions",
- "name": "Employee Proxies",
+ "name": "Employee Proxy",
  "owner": "Administrator",
  "permissions": [
   {

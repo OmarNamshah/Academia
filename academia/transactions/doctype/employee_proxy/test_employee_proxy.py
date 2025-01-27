@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestEmployeeProxies(FrappeTestCase):
+class TestEmployeeProxy(FrappeTestCase):
 	pass

@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class EmployeeProxies(Document):
+class EmployeeProxy(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -16,11 +16,11 @@ class EmployeeProxies(Document):
 		from frappe.types import DF
 
 		delegated_employees: DF.Table[DelegatedEmployees]
-		employee: DF.Link
-		employee_company: DF.Link | None
-		employee_department: DF.Link | None
-		employee_designation: DF.Link | None
-		employee_email: DF.Link
+		employee: DF.Link | None
+		employee_company: DF.Link
+		employee_department: DF.Link
+		employee_designation: DF.Link
+		employee_email: DF.Link | None
 		employee_name: DF.Data | None
 	# end: auto-generated types
 	pass

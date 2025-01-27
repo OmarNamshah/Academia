@@ -15,10 +15,10 @@ class DelegatedEmployees(Document):
 		from frappe.types import DF
 
 		company: DF.Link | None
+		delegated_employee: DF.Link
 		department: DF.Link | None
 		designation: DF.Link | None
 		email: DF.Link
-		employee: DF.Link
 		full_name: DF.Data | None
 		parent: DF.Data
 		parentfield: DF.Data
