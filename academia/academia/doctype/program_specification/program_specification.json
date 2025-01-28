@@ -284,7 +284,7 @@
    "fieldname": "faculty_requirements",
    "fieldtype": "Link",
    "label": "Faculty Requirements ",
-   "options": "University Requirement",
+   "options": "Faculty Requirement",
    "reqd": 1
   },
   {
@@ -300,7 +300,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-27 01:15:26.685253",
+ "modified": "2025-01-27 02:38:47.345343",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Program Specification",
