@@ -30,10 +30,12 @@ class CourseSpecification(Document):
 		date_of_course_development: DF.Date
 		description: DF.TextEditor | None
 		effective_academic_year: DF.Link | None
+		elective_template: DF.Check
 		faculty: DF.Data | None
 		file: DF.Attach | None
 		languages: DF.TableMultiSelect[CourseLanguage]
 		pre_requisites: DF.TableMultiSelect[PreRequisites]
 		program: DF.ReadOnly | None
+		reference_department: DF.ReadOnly | None
 	# end: auto-generated types
 	pass

@@ -18,7 +18,7 @@ class Course(Document):
 		course_image: DF.AttachImage | None
 		course_name: DF.Data
 		course_name_english: DF.Data
-		course_type: DF.Literal["", "University Requirement", "Faculty Requirement", "Program Requirement"]
+		course_type: DF.Literal["", "University Elective", "Faculty Elective", "Program Elective"]
 		description: DF.TextEditor | None
 		elective_template: DF.Check
 		faculty: DF.Link | None

@@ -7,17 +7,20 @@
  "engine": "InnoDB",
  "field_order": [
   "details_tab",
+  "elective_template",
+  "section_break_oksq",
   "course_code",
   "course_name",
   "course_name_english",
-  "faculty",
   "course_type",
+  "faculty",
   "program",
   "course_image",
   "column_break_iypx",
   "languages",
   "pre_requisites",
   "co_requisites",
+  "reference_department",
   "section_break_vkwq",
   "effective_academic_year",
   "approval_date",
@@ -170,13 +173,32 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "default": "0",
+   "fetch_from": "course_code.elective_template",
+   "fetch_if_empty": 1,
+   "fieldname": "elective_template",
+   "fieldtype": "Check",
+   "label": "Elective Template ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_oksq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "course_code.reference_department",
+   "fieldname": "reference_department",
+   "fieldtype": "Read Only",
+   "label": "Reference Department"
   }
  ],
  "image_field": "course_image",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-29 01:34:23.080004",
+ "modified": "2025-01-29 02:34:32.871440",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Course Specification",
