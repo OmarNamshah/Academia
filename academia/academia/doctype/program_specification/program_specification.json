@@ -41,6 +41,13 @@
   "table_ytno",
   "credit_hours_system_section",
   "table_omcu",
+  "elective_course_tab",
+  "university_elective_course_section",
+  "university_elective_course",
+  "faculty_elective_course_section",
+  "faculty_elective_course",
+  "program_elective_course_section",
+  "program_elective_course",
   "research_tab",
   "minimum_course_average_to_start_research",
   "minimum_research_period",
@@ -296,11 +303,49 @@
    "fieldname": "total_elective_hours",
    "fieldtype": "Int",
    "label": "Total Elective Hours"
+  },
+  {
+   "fieldname": "elective_course_tab",
+   "fieldtype": "Tab Break",
+   "label": "Elective Course"
+  },
+  {
+   "fieldname": "university_elective_course_section",
+   "fieldtype": "Section Break",
+   "label": "University Elective Course"
+  },
+  {
+   "fieldname": "university_elective_course",
+   "fieldtype": "Table",
+   "label": "University Elective Course",
+   "options": "Program Elective Course"
+  },
+  {
+   "fieldname": "faculty_elective_course_section",
+   "fieldtype": "Section Break",
+   "label": "Faculty Elective Course"
+  },
+  {
+   "fieldname": "faculty_elective_course",
+   "fieldtype": "Table",
+   "label": "Faculty Elective Course",
+   "options": "Program Elective Course"
+  },
+  {
+   "fieldname": "program_elective_course_section",
+   "fieldtype": "Section Break",
+   "label": "Program Elective Course"
+  },
+  {
+   "fieldname": "program_elective_course",
+   "fieldtype": "Table",
+   "label": "Program Elective Course",
+   "options": "Program Elective Course"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-27 02:38:47.345343",
+ "modified": "2025-01-29 01:45:22.361239",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Program Specification",

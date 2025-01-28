@@ -21,6 +21,9 @@ class ProgramSpecification(Document):
 	if TYPE_CHECKING:
 		from academia.academia.doctype.course_language.course_language import CourseLanguage
 		from academia.academia.doctype.credit_hours_course.credit_hours_course import CreditHoursCourse
+		from academia.academia.doctype.program_elective_course.program_elective_course import (
+			ProgramElectiveCourse,
+		)
 		from academia.academia.doctype.study_plan_course.study_plan_course import StudyPlanCourse
 		from frappe.types import DF
 
@@ -35,12 +38,14 @@ class ProgramSpecification(Document):
 		delivery_mode: DF.Literal["", "On Campus", "Online"]
 		department: DF.ReadOnly
 		faculty: DF.ReadOnly
+		faculty_elective_course: DF.Table[ProgramElectiveCourse]
 		faculty_requirements: DF.Link
 		file: DF.Attach | None
 		implementation_start_academic_year: DF.Link | None
 		maximum_research_period: DF.Int
 		minimum_course_average_to_start_research: DF.Data | None
 		minimum_research_period: DF.Int
+		program_elective_course: DF.Table[ProgramElectiveCourse]
 		program_name: DF.Link
 		program_name_english: DF.ReadOnly
 		research_or_thesis: DF.Check
@@ -48,6 +53,7 @@ class ProgramSpecification(Document):
 		table_ytno: DF.Table[StudyPlanCourse]
 		total_elective_hours: DF.Int
 		total_hours_required_to_award_degree: DF.Int
+		university_elective_course: DF.Table[ProgramElectiveCourse]
 		university_requirements: DF.Link
 	# end: auto-generated types
 
