@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:{title} - {faculty} - {date_of_development}",
+ "autoname": "format:FR - {date_of_development} - {faculty}",
  "creation": "2025-01-27 01:00:46.189099",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -85,7 +85,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-27 01:48:29.055615",
+ "modified": "2025-01-29 02:02:05.898857",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Faculty Requirement",
