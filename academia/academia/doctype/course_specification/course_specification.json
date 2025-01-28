@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "details_tab",
   "course_code",
   "course_name",
   "course_name_english",
@@ -26,7 +27,8 @@
   "section_break_sjbv",
   "description",
   "course_details_tab",
-  "credit_hours"
+  "credit_hours",
+  "amended_from"
  ],
  "fields": [
   {
@@ -35,7 +37,8 @@
    "in_list_view": 1,
    "label": "Course Code",
    "options": "Course",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fetch_from": "course_code.course_name",
@@ -55,7 +58,7 @@
   {
    "fetch_from": "course_code.faculty",
    "fieldname": "faculty",
-   "fieldtype": "Read Only",
+   "fieldtype": "Data",
    "label": "faculty",
    "read_only": 1
   },
@@ -99,7 +102,7 @@
   {
    "fieldname": "course_details_tab",
    "fieldtype": "Tab Break",
-   "label": "Course Details"
+   "label": "Hour Details"
   },
   {
    "fetch_from": "course_code.course_name_english",
@@ -152,12 +155,28 @@
    "fieldtype": "Read Only",
    "label": "Program",
    "read_only": 1
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Course Specification",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "image_field": "course_image",
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-01-04 17:33:17.096119",
+ "modified": "2025-01-29 01:34:23.080004",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Course Specification",
